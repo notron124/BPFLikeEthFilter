@@ -20,10 +20,12 @@
 #include "main.h"
 #include "lwip.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lwip/apps/httpd.h"
 #include "string.h"
+#include "hbpf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +39,8 @@
 #define LED2_OFF        GPIOB->ODR &= ~LD2_Pin
 #define LED3_ON         GPIOB->ODR |= LD3_Pin
 #define LED3_OFF        GPIOB->ODR &= ~LD3_Pin
+
+#define numSSItags 2
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -53,6 +57,7 @@ const char* LedCGIHandler(int iIndex, int iNumParams, char* pcParam[], char* pcV
 const tCGI LedCGI = {"/leds.cgi", LedCGIHandler};
 
 tCGI theCGITable[1];
+char const *theSSItags[numSSItags] = {"tag1","tag2"};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,6 +102,34 @@ void myCGIInit(void)
 
    http_set_cgi_handlers(theCGITable, 1);
 }
+
+u16_t mySSIHandler(int iIndex, char *pcInsert, int iInsertLen)
+{
+   // see which tag in the array theSSItags to handle
+   if (iIndex == 0) //is “tag1”
+   {
+      //copy the string to be displayed to pcInsert
+      strcpy(pcInsert, myStr);
+      //return number of characters that need to be inserted in html
+      return strlen(myStr);
+   }
+   else if (iIndex == 1) //is “tag2”
+   {
+      char myStr2[] = "Hello from Tag #2!"; //string to be displayed on web page
+      //copy string to be displayed
+      strcpy(pcInsert, myStr2);
+      //return number of characters that need to be inserted in html
+      return strlen(myStr2);
+   }
+   return 0;
+} //mySSIHandler
+
+void mySSIinit(void)
+{
+   //configure SSI handler function
+   //theSSItags is an array of SSI tag strings to search for in SSI-enabled files
+   http_set_ssi_handler(mySSIHandler, (char const **)theSSItags, numSSItags);
+} //mySSIinit
 
 /* USER CODE END 0 */
 

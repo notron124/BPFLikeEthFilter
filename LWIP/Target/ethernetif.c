@@ -30,6 +30,7 @@
 #include "ethernetif.h"
 #include "lan8742.h"
 #include <string.h>
+#include "hbpf.h"
 
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
@@ -47,7 +48,7 @@
 #define ETH_TX_BUFFER_MAX             ((ETH_TX_DESC_CNT) * 2U)
 
 /* USER CODE BEGIN 1 */
-
+#define LED2_TGL        GPIOB->ODR ^= LD2_Pin
 /* USER CODE END 1 */
 
 /* Private variables ---------------------------------------------------------*/
@@ -126,6 +127,7 @@ lan8742_IOCtx_t  LAN8742_IOCtx = {ETH_PHY_IO_Init,
 void pbuf_free_custom(struct pbuf *p);
 
 /* USER CODE BEGIN 4 */
+void Filter(uint8_t *pdata, struct sock_filter *filter);
 
 uint8_t FilterBySourceMACAdress(uint8_t *MACAddr, uint8_t *pData)
 {
@@ -322,13 +324,29 @@ static struct pbuf * low_level_input(struct netif *netif)
   {
     if (HAL_ETH_ReadData(&heth, (void **)&p) == HAL_OK)
     {
-       myp = p;
-       while(myp != NULL)
+      LED2_TGL;
+      myp = p;
+      mypData = p->payload;
+      okCounter = 0;
+      _index = 0;
+
+      Filter(p->payload, &INSTRUCTION_IP_UDP[0]);
+
+      if (okCounter == 1)
+      {
+         while(myp != NULL)
+         {
+            HAL_UART_Transmit_IT(&huart3, myp->payload, myp->len);
+               myp = myp->next;
+         }
+      }
+
+       /*while(myp != NULL)
        {
           if (FilterBySourceMACAdress(&MACAddr[0], myp->payload))
              HAL_UART_Transmit_IT(&huart3, myp->payload, myp->len);
           myp = myp->next;
-       }
+       }*/
     }
   }
 

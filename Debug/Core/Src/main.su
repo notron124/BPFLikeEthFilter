@@ -1,7 +1,9 @@
-../Core/Src/main.c:70:13:LedCGIHandler	32	static
-../Core/Src/main.c:94:6:myCGIInit	8	static
-../Core/Src/main.c:107:5:main	8	static
-../Core/Src/main.c:153:6:SystemClock_Config	88	static
-../Core/Src/main.c:199:13:MX_USART3_UART_Init	8	static
-../Core/Src/main.c:232:13:MX_GPIO_Init	56	static
-../Core/Src/main.c:290:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:75:13:LedCGIHandler	32	static
+../Core/Src/main.c:99:6:myCGIInit	8	static
+../Core/Src/main.c:106:7:mySSIHandler	56	static
+../Core/Src/main.c:127:6:mySSIinit	8	static
+../Core/Src/main.c:140:5:main	8	static
+../Core/Src/main.c:186:6:SystemClock_Config	88	static
+../Core/Src/main.c:232:13:MX_USART3_UART_Init	8	static
+../Core/Src/main.c:265:13:MX_GPIO_Init	56	static
+../Core/Src/main.c:323:6:Error_Handler	4	static,ignoring_inline_asm

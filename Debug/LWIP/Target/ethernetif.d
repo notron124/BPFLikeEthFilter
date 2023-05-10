@@ -59,7 +59,8 @@ LWIP/Target/ethernetif.o: ../LWIP/Target/ethernetif.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/ip4.h \
  ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/etharp.h \
  ../Middlewares/Third_Party/LwIP/src/include/lwip/ethip6.h \
- ../LWIP/Target/ethernetif.h ../Drivers/BSP/Components/lan8742/lan8742.h
+ ../LWIP/Target/ethernetif.h ../Drivers/BSP/Components/lan8742/lan8742.h \
+ ../Core/Inc/hbpf.h ../Core/Inc/main.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -123,3 +124,5 @@ LWIP/Target/ethernetif.o: ../LWIP/Target/ethernetif.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/LwIP/src/include/lwip/ethip6.h:
 ../LWIP/Target/ethernetif.h:
 ../Drivers/BSP/Components/lan8742/lan8742.h:
+../Core/Inc/hbpf.h:
+../Core/Inc/main.h:

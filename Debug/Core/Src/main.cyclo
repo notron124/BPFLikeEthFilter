@@ -1,7 +1,9 @@
-main.c:70:13:LedCGIHandler	6
-main.c:94:6:myCGIInit	1
-main.c:107:5:main	1
-main.c:153:6:SystemClock_Config	3
-main.c:199:13:MX_USART3_UART_Init	2
-main.c:232:13:MX_GPIO_Init	1
-main.c:290:6:Error_Handler	1
+main.c:75:13:LedCGIHandler	6
+main.c:99:6:myCGIInit	1
+main.c:106:7:mySSIHandler	3
+main.c:127:6:mySSIinit	1
+main.c:140:5:main	1
+main.c:186:6:SystemClock_Config	3
+main.c:232:13:MX_USART3_UART_Init	2
+main.c:265:13:MX_GPIO_Init	1
+main.c:323:6:Error_Handler	1
