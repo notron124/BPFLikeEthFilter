@@ -2,51 +2,66 @@
 #include "pbuf.h"
 
 struct pbuf mypbuf;
-uint16_t okCounter = 0;
 uint8_t *mypData = NULL;
 uint32_t filteredCounter = 0;
 uint8_t _index = 0;
 uint8_t X = 0;
 char myStr[7];
 
-
-void FunctionTrue(struct sock_filter *filter)
+void jt(uint8_t destination)
 {
-   okCounter++;
-   _index++;
+   _index = destination;
 }
 
-void FunctionFalse(struct sock_filter *filter)
+void jf(uint8_t destination)
 {
-   filteredCounter++;
-   _index++;
+   _index = destination;
 }
 
-void SetRet(struct sock_filter *filter);
-
-void Continue(struct sock_filter *filter)
-{
-   _index++;
-}
+struct sock_filter INSTRUCTION_ARP[] = {
+         { BPF_JMP, 0, 0, 0x0C },
+         { BPF_JEQ, 2, 3, ETH_P_ARP },
+         { BPF_RET, 0, 0, 1 },
+         { BPF_RET, 0, 0, 0 }
+};
 
 struct sock_filter INSTRUCTION_IP[] = {
-        { BPF_JMP, NULL, NULL, 0x0000000c },
-        { BPF_JEQ, FunctionTrue, FunctionFalse, ETH_P_ARP },
-        { 0x06, NULL, NULL, 0x00040000 },
-        { 0x06, NULL, NULL, 0x00000000 }
+         { BPF_JMP, 0, 0, 0x0C },
+         { BPF_JEQ, 2, 3, ETH_P_IP },
+         { BPF_RET, 0, 0, 1 },
+         { BPF_RET, 0, 0, 0 }
+};
+
+struct sock_filter INSTRUCTION_IP_TCP[] = {
+         { BPF_JMP, 0, 0, 0x0C },
+         { BPF_JEQ, 2, 5, ETH_P_IP },
+         { BPF_JMP, 0, 0, 0x17 },
+         { BPF_JEQ, 4, 5, 0x06 },
+         { BPF_RET, 0, 0, 1 },
+         { BPF_RET, 0, 0, 0 }
+};
+
+struct sock_filter INSTRUCTION_DEST_PORT[] = {
+         { BPF_JMP,  0,  0,  0xC },
+         { BPF_JEQ,  2,  10, ETH_P_IP },
+         { BPF_JMP,  0,  0,  0x17 },
+         { BPF_JEQ,  4,  10, 0x11 },
+         { BPF_JMP,  0,  0,  0x14},
+         { BPF_JSET, 10, 6,  0x1FFF },
+         { BPF_LDXB, 0,  0,  0xE },
+         { BPF_JMP,  0,  0,  0x10 },
+         { BPF_JEQ,  9,  10, 0x1BB },
+         { BPF_RET,  0,  0,  1 },
+         { BPF_RET,  0,  0,  0 }
 };
 
 struct sock_filter INSTRUCTION_IP_UDP[] = {
-         { BPF_JMP, NULL, NULL, 0xC},
-         { BPF_JEQ, Continue, SetRet, ETH_P_IP },
-         { BPF_JMP, NULL, NULL, 0x17 },
-         { BPF_JEQ, Continue, SetRet, 0x11 },
-         //{ BPF_JMP, NULL, NULL, 0x14},
-         //{ BPF_JSET, SetRet, Continue, 0x1FFF },
-         //{ BPF_LDXB, NULL, NULL, 0xE },
-         //{ BPF_JMP, NULL, NULL, 0x10 },
-         //{ BPF_JEQ, Continue, SetRet, 0x1BB},
-         { BPF_RET, NULL, NULL, 0x00040000 }
+         { BPF_JMP, 0, 0, 0x0C },
+         { BPF_JEQ, 2, 5, ETH_P_IP },
+         { BPF_JMP, 0, 0, 0x17 },
+         { BPF_JEQ, 4, 5, 0x11 },
+         { BPF_RET, 0, 0, 1 },
+         { BPF_RET, 0, 0, 0 }
 };
 
 void SetRet(struct sock_filter *filter)
@@ -96,9 +111,9 @@ void jset(uint32_t k, struct sock_filter *filter)
    }
 
    if ((actualData & 0x1FFF) == 0)
-      filter[_index].functionTrue(filter);
+      jt(filter[_index].destinationTrue);
    else
-      filter[_index].functionFalse(filter);
+      jf(filter[_index].destinationFalse);
 }
 
 void jeq(uint32_t k, struct sock_filter *filter)
@@ -114,13 +129,14 @@ void jeq(uint32_t k, struct sock_filter *filter)
    }
 
    if (actualData == k)
-      filter[_index].functionTrue(filter);
+      jt(filter[_index].destinationTrue);
    else
-      filter[_index].functionFalse(filter);
+      jf(filter[_index].destinationFalse);
 }
 
-void Filter(uint8_t *pdata, struct sock_filter *filter)
+uint8_t Filter(uint8_t *pdata, struct sock_filter *filter)
 {
+   uint8_t output = 0;
    uint16_t size = 10;
    while (_index < size)
    {
@@ -143,14 +159,16 @@ void Filter(uint8_t *pdata, struct sock_filter *filter)
          break;
 
       case BPF_RET:
-         okCounter++;
+         output = filter[_index].k;
          _index = 10;
          break;
 
       default:
+         output = 0;
          _index = 10;
          break;
       }
    }
+   return output;
    _index = 0;
 }

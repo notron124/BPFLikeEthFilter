@@ -127,7 +127,9 @@ lan8742_IOCtx_t  LAN8742_IOCtx = {ETH_PHY_IO_Init,
 void pbuf_free_custom(struct pbuf *p);
 
 /* USER CODE BEGIN 4 */
-void Filter(uint8_t *pdata, struct sock_filter *filter);
+extern struct sock_filter INSTRUCTION_IP_TCP[];
+
+uint8_t Filter(uint8_t *pdata, struct sock_filter *filter);
 
 uint8_t FilterBySourceMACAdress(uint8_t *MACAddr, uint8_t *pData)
 {
@@ -327,12 +329,9 @@ static struct pbuf * low_level_input(struct netif *netif)
       LED2_TGL;
       myp = p;
       mypData = p->payload;
-      okCounter = 0;
       _index = 0;
 
-      Filter(p->payload, &INSTRUCTION_IP_UDP[0]);
-
-      if (okCounter == 1)
+      if (Filter(p->payload, &INSTRUCTION_IP_TCP[0]))
       {
          while(myp != NULL)
          {

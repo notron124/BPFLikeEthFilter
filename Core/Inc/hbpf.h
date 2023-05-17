@@ -30,8 +30,8 @@ extern uint8_t _index;
 
 struct sock_filter {
    uint16_t code;
-   void (*functionTrue)(struct sock_filter *filter);
-   void (*functionFalse)(struct sock_filter *filter);
+   uint8_t destinationTrue;
+   uint8_t destinationFalse;
    uint32_t k;
 };
 

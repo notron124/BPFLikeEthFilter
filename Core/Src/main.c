@@ -26,6 +26,7 @@
 #include "lwip/apps/httpd.h"
 #include "string.h"
 #include "hbpf.h"
+#include "debounceAvoid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +59,9 @@ const tCGI LedCGI = {"/leds.cgi", LedCGIHandler};
 
 tCGI theCGITable[1];
 char const *theSSItags[numSSItags] = {"tag1","tag2"};
+
+struct Key_TypeDef key1;
+struct Keys_Properties keysProperties;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -130,6 +134,18 @@ void mySSIinit(void)
    //theSSItags is an array of SSI tag strings to search for in SSI-enabled files
    http_set_ssi_handler(mySSIHandler, (char const **)theSSItags, numSSItags);
 } //mySSIinit
+
+void KeyInit(void)
+{
+   key1.GPIOx = USER_Btn_GPIO_Port;
+   key1.pin = USER_Btn_Pin;
+   key1.shortPressID = 0;
+   key1.longPressID = 4;
+   key1.flags.autorepeat = 0;
+   keysProperties.autorepeatSpeed = 50;
+   keysProperties.shortPressDelay = 50;
+   keysProperties.longPressDelay = 1000;
+}
 
 /* USER CODE END 0 */
 
