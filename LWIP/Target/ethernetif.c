@@ -52,6 +52,7 @@
 /* USER CODE END 1 */
 
 /* Private variables ---------------------------------------------------------*/
+
 /*
 @Note: This interface is implemented to operate in zero-copy mode only:
         - Rx buffers will be allocated from LwIP stack memory heap,
@@ -130,25 +131,6 @@ void pbuf_free_custom(struct pbuf *p);
 extern struct sock_filter INSTRUCTION_IP_TCP[];
 
 uint8_t Filter(uint8_t *pdata, struct sock_filter *filter);
-
-uint8_t FilterBySourceMACAdress(uint8_t *MACAddr, uint8_t *pData)
-{
-   uint8_t equalityCntr = 0;
-   uint8_t *mypdata = pData;
-
-   for (uint8_t i = 0; i < 6; i++)
-   {
-      if((*mypdata) == MACAddr[i%6])
-         equalityCntr++;
-
-      mypdata++;
-   }
-
-   if (equalityCntr == 6)
-      return 0;
-   else
-      return 1;
-}
 /* USER CODE END 4 */
 
 /*******************************************************************************
@@ -311,41 +293,17 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
 static struct pbuf * low_level_input(struct netif *netif)
 {
   struct pbuf *p = NULL;
-  struct pbuf *myp = NULL;
-
-  uint8_t MACAddr[6];
-
-  MACAddr[0] = 0xFF;
-  MACAddr[1] = 0xFF;
-  MACAddr[2] = 0xFF;
-  MACAddr[3] = 0xFF;
-  MACAddr[4] = 0xFF;
-  MACAddr[5] = 0xFF;
 
   if(RxAllocStatus == RX_ALLOC_OK)
   {
     if (HAL_ETH_ReadData(&heth, (void **)&p) == HAL_OK)
     {
       LED2_TGL;
-      myp = p;
-      mypData = p->payload;
-      _index = 0;
 
       if (Filter(p->payload, &INSTRUCTION_IP_TCP[0]))
       {
-         while(myp != NULL)
-         {
-            HAL_UART_Transmit_IT(&huart3, myp->payload, myp->len);
-               myp = myp->next;
-         }
-      }
 
-       /*while(myp != NULL)
-       {
-          if (FilterBySourceMACAdress(&MACAddr[0], myp->payload))
-             HAL_UART_Transmit_IT(&huart3, myp->payload, myp->len);
-          myp = myp->next;
-       }*/
+      }
     }
   }
 

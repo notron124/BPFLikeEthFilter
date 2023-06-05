@@ -53,15 +53,9 @@
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-const char* LedCGIHandler(int iIndex, int iNumParams, char* pcParam[], char* pcVlaue[]);
-
-const tCGI LedCGI = {"/leds.cgi", LedCGIHandler};
-
-tCGI theCGITable[1];
-char const *theSSItags[numSSItags] = {"tag1","tag2"};
-
 struct Key_TypeDef key1;
 struct Keys_Properties keysProperties;
+char data[32];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,76 +69,16 @@ static void MX_USART3_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-/*CGI handler for LEDs*/
-const char* LedCGIHandler(int iIndex, int iNumParams, char* pcParam[], char* pcValue[])
+void KeyInit(struct Key_TypeDef *keyx, struct Keys_Properties *keyprop)
 {
-   uint32_t i = 0;
-
-   if (iIndex == 0)
-   {
-     LED2_OFF;
-     LED3_OFF;
-
-      for (i = 0; i < iNumParams; i++)
-      {
-         if (strcmp(pcParam[i], "led") == 0)
-         {
-            if (strcmp(pcValue[i], "1") == 0)
-               LED2_ON;
-
-            else if (strcmp(pcValue[i], "2") == 0)
-               LED3_ON;
-         }
-      }
-   }
-   return "/index.html";
-}
-
-void myCGIInit(void)
-{
-   theCGITable[0] = LedCGI;
-
-   http_set_cgi_handlers(theCGITable, 1);
-}
-
-u16_t mySSIHandler(int iIndex, char *pcInsert, int iInsertLen)
-{
-   // see which tag in the array theSSItags to handle
-   if (iIndex == 0) //is “tag1”
-   {
-      //copy the string to be displayed to pcInsert
-      strcpy(pcInsert, myStr);
-      //return number of characters that need to be inserted in html
-      return strlen(myStr);
-   }
-   else if (iIndex == 1) //is “tag2”
-   {
-      char myStr2[] = "Hello from Tag #2!"; //string to be displayed on web page
-      //copy string to be displayed
-      strcpy(pcInsert, myStr2);
-      //return number of characters that need to be inserted in html
-      return strlen(myStr2);
-   }
-   return 0;
-} //mySSIHandler
-
-void mySSIinit(void)
-{
-   //configure SSI handler function
-   //theSSItags is an array of SSI tag strings to search for in SSI-enabled files
-   http_set_ssi_handler(mySSIHandler, (char const **)theSSItags, numSSItags);
-} //mySSIinit
-
-void KeyInit(void)
-{
-   key1.GPIOx = USER_Btn_GPIO_Port;
-   key1.pin = USER_Btn_Pin;
-   key1.shortPressID = 0;
-   key1.longPressID = 4;
-   key1.flags.autorepeat = 0;
-   keysProperties.autorepeatSpeed = 50;
-   keysProperties.shortPressDelay = 50;
-   keysProperties.longPressDelay = 1000;
+   keyx->GPIOx = USER_Btn_GPIO_Port;
+   keyx->pin = USER_Btn_Pin;
+   keyx->shortPressID = 0;
+   keyx->longPressID = 4;
+   keyx->flags.autorepeat = 0;
+   keyprop->autorepeatSpeed = 50;
+   keyprop->shortPressDelay = 50;
+   keyprop->longPressDelay = 1000;
 }
 
 /* USER CODE END 0 */
@@ -179,8 +113,7 @@ int main(void)
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
   MX_USART3_UART_Init();
-  httpd_init();
-  myCGIInit();
+  KeyInit(&key1, &keysProperties);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -191,6 +124,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
      MX_LWIP_Process();
+
+     if (KEY_READY)
+     {
+    	 RESET_KEY_READY;
+    	 sprintf(data, "Amount of passed packets: %lu\r\n", filteredCounter);
+    	 HAL_UART_Transmit_IT(&huart3, data, sizeof(data));
+     }
   }
   /* USER CODE END 3 */
 }

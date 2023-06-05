@@ -1,12 +1,10 @@
 #include "hbpf.h"
 #include "pbuf.h"
 
-struct pbuf mypbuf;
 uint8_t *mypData = NULL;
 uint32_t filteredCounter = 0;
 uint8_t _index = 0;
 uint8_t X = 0;
-char myStr[7];
 
 void jt(uint8_t destination)
 {
@@ -111,9 +109,9 @@ void jset(uint32_t k, struct sock_filter *filter)
    }
 
    if ((actualData & 0x1FFF) == 0)
-      jt(filter[_index].destinationTrue);
+      jt(filter[_index].jt);
    else
-      jf(filter[_index].destinationFalse);
+      jf(filter[_index].jf);
 }
 
 void jeq(uint32_t k, struct sock_filter *filter)
@@ -129,9 +127,9 @@ void jeq(uint32_t k, struct sock_filter *filter)
    }
 
    if (actualData == k)
-      jt(filter[_index].destinationTrue);
+      jt(filter[_index].jt);
    else
-      jf(filter[_index].destinationFalse);
+      jf(filter[_index].jf);
 }
 
 uint8_t Filter(uint8_t *pdata, struct sock_filter *filter)

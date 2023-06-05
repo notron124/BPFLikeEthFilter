@@ -22,24 +22,16 @@
 #define BPF_LDXB        0x50
 #define BPF_RET         0x80
 
-extern uint16_t okCounter;
-extern uint8_t *mypData;
-extern char myStr[];
-extern uint8_t _index;
-
+extern uint32_t filteredCounter;
 
 struct sock_filter {
    uint16_t code;
-   uint8_t destinationTrue;
-   uint8_t destinationFalse;
+   uint8_t jt;
+   uint8_t jf;
    uint32_t k;
 };
 
 extern struct sock_filter INSTRUCTION_IP[];
 extern struct sock_filter INSTRUCTION_IP_UDP[];
 
-struct sock_fprog {
-        unsigned short len;
-        struct sock_filter *filter;
-};
 #endif
