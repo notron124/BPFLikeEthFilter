@@ -1,20 +1,9 @@
 #include "hbpf.h"
-#include "pbuf.h"
 
 uint8_t *mypData = NULL;
 uint32_t filteredCounter = 0;
 uint8_t _index = 0;
 uint8_t X = 0;
-
-void jt(uint8_t destination)
-{
-   _index = destination;
-}
-
-void jf(uint8_t destination)
-{
-   _index = destination;
-}
 
 struct sock_filter INSTRUCTION_ARP[] = {
          { BPF_JMP, 0, 0, 0x0C },
@@ -34,7 +23,7 @@ struct sock_filter INSTRUCTION_IP_TCP[] = {
          { BPF_JMP, 0, 0, 0x0C },
          { BPF_JEQ, 2, 5, ETH_P_IP },
          { BPF_JMP, 0, 0, 0x17 },
-         { BPF_JEQ, 4, 5, 0x06 },
+         { BPF_JEQ, 4, 5, IP_TCP_PROTOCOL },
          { BPF_RET, 0, 0, 1 },
          { BPF_RET, 0, 0, 0 }
 };
@@ -43,7 +32,7 @@ struct sock_filter INSTRUCTION_DEST_PORT[] = {
          { BPF_JMP,  0,  0,  0xC },
          { BPF_JEQ,  2,  10, ETH_P_IP },
          { BPF_JMP,  0,  0,  0x17 },
-         { BPF_JEQ,  4,  10, 0x11 },
+         { BPF_JEQ,  4,  10, IP_TCP_PROTOCOL },
          { BPF_JMP,  0,  0,  0x14},
          { BPF_JSET, 10, 6,  0x1FFF },
          { BPF_LDXB, 0,  0,  0xE },
@@ -57,14 +46,19 @@ struct sock_filter INSTRUCTION_IP_UDP[] = {
          { BPF_JMP, 0, 0, 0x0C },
          { BPF_JEQ, 2, 5, ETH_P_IP },
          { BPF_JMP, 0, 0, 0x17 },
-         { BPF_JEQ, 4, 5, 0x11 },
+         { BPF_JEQ, 4, 5, IP_UDP_PROTOCOL },
          { BPF_RET, 0, 0, 1 },
          { BPF_RET, 0, 0, 0 }
 };
 
-void SetRet(struct sock_filter *filter)
+void jt(uint8_t destination)
 {
-   _index = 10;
+   _index = destination;
+}
+
+void jf(uint8_t destination)
+{
+   _index = destination;
 }
 
 void jmp(uint8_t *pdata, uint32_t k)

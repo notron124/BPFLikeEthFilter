@@ -29,23 +29,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  000300c0  2**0
                   CONTENTS, READONLY
- 13 .debug_info   0001cd5f  00000000  00000000  000300f0  2**0
+ 13 .debug_info   0001cd32  00000000  00000000  000300f0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 0000523e  00000000  00000000  0004ce4f  2**0
+ 14 .debug_abbrev 0000523e  00000000  00000000  0004ce22  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001490  00000000  00000000  00052090  2**3
+ 15 .debug_aranges 00001488  00000000  00000000  00052060  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 000013f0  00000000  00000000  00053520  2**3
+ 16 .debug_ranges 000013e8  00000000  00000000  000534e8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00030015  00000000  00000000  00054910  2**0
+ 17 .debug_macro  0002fd31  00000000  00000000  000548d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0002491f  00000000  00000000  00084925  2**0
+ 18 .debug_line   000244ff  00000000  00000000  00084601  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000ec9a5  00000000  00000000  000a9244  2**0
+ 19 .debug_str    000ec927  00000000  00000000  000a8b00  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000050  00000000  00000000  00195be9  2**0
+ 20 .comment      00000050  00000000  00000000  00195427  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00005cfc  00000000  00000000  00195c3c  2**2
+ 21 .debug_frame  00005cd4  00000000  00000000  00195478  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -413,9 +413,9 @@ Disassembly of section .text:
  8000592:	bf00      	nop
 
 08000594 <jt>:
-uint32_t filteredCounter = 0;
-uint8_t _index = 0;
-uint8_t X = 0;
+         { BPF_RET, 0, 0, 1 },
+         { BPF_RET, 0, 0, 0 }
+};
 
 void jt(uint8_t destination)
 {
@@ -458,9 +458,6 @@ void jf(uint8_t destination)
  80005d0:	200000e8 	.word	0x200000e8
 
 080005d4 <jmp>:
-{
-   _index = 10;
-}
 
 void jmp(uint8_t *pdata, uint32_t k)
 {

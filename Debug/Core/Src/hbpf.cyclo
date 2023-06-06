@@ -1,9 +1,8 @@
-hbpf.c:9:6:jt	1
-hbpf.c:14:6:jf	1
-hbpf.c:65:6:SetRet	1
-hbpf.c:70:6:jmp	1
-hbpf.c:79:6:ldxb	1
-hbpf.c:86:9:getKSize	2
-hbpf.c:99:6:jset	3
-hbpf.c:117:6:jeq	3
-hbpf.c:135:9:Filter	10
+hbpf.c:54:6:jt	1
+hbpf.c:59:6:jf	1
+hbpf.c:64:6:jmp	1
+hbpf.c:73:6:ldxb	1
+hbpf.c:80:9:getKSize	2
+hbpf.c:93:6:jset	3
+hbpf.c:111:6:jeq	3
+hbpf.c:129:9:Filter	10
