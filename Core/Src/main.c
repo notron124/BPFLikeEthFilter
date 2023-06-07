@@ -41,7 +41,6 @@
 #define LED3_ON         GPIOB->ODR |= LD3_Pin
 #define LED3_OFF        GPIOB->ODR &= ~LD3_Pin
 
-#define numSSItags 2
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,11 +50,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart3;
+extern ETH_HandleTypeDef heth;
 
+ETH_MACFilterConfigTypeDef MACFilterConf;
 /* USER CODE BEGIN PV */
 struct Key_TypeDef key1;
 struct Keys_Properties keysProperties;
-char data[32];
+char data[35];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,6 +82,10 @@ void KeyInit(struct Key_TypeDef *keyx, struct Keys_Properties *keyprop)
    keyprop->longPressDelay = 1000;
 }
 
+void MACFilterInit(ETH_MACFilterConfigTypeDef *MACFilterConf)
+{
+   MACFilterConf->ReceiveAllMode = ENABLE;
+}
 /* USER CODE END 0 */
 
 /**
@@ -114,6 +119,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   MX_USART3_UART_Init();
   KeyInit(&key1, &keysProperties);
+  MACFilterInit(&MACFilterConf);
+  HAL_ETH_SetMACFilterConfig(&heth, &MACFilterConf);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -196,7 +203,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 460800;
+  huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;

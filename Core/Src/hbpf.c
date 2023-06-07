@@ -37,7 +37,7 @@ struct sock_filter INSTRUCTION_DEST_PORT[] = {
          { BPF_JSET, 10, 6,  0x1FFF },
          { BPF_LDXB, 0,  0,  0xE },
          { BPF_JMP,  0,  0,  0x10 },
-         { BPF_JEQ,  9,  10, 0x1BB },
+         { BPF_JEQ,  9,  10, 0xD949 },
          { BPF_RET,  0,  0,  1 },
          { BPF_RET,  0,  0,  0 }
 };
@@ -128,7 +128,7 @@ void jeq(uint32_t k, struct sock_filter *filter)
 
 uint8_t Filter(uint8_t *pdata, struct sock_filter *filter)
 {
-   uint8_t output = 0;
+   uint8_t ret;
    uint16_t size = 10;
    while (_index < size)
    {
@@ -151,16 +151,17 @@ uint8_t Filter(uint8_t *pdata, struct sock_filter *filter)
          break;
 
       case BPF_RET:
-         output = filter[_index].k;
-         _index = 10;
+         ret = filter[_index].k;
+         _index = 0;
+         return ret;
          break;
 
       default:
-         output = 0;
-         _index = 10;
+         _index = 0;
+         return 0;
          break;
       }
    }
-   return output;
    _index = 0;
+   return 0;
 }

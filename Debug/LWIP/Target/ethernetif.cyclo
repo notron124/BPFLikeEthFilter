@@ -1,6 +1,6 @@
 ethernetif.c:146:13:low_level_init	2
 ethernetif.c:246:14:low_level_output	5
-ethernetif.c:293:22:low_level_input	3
+ethernetif.c:293:22:low_level_input	4
 ethernetif.c:322:6:ethernetif_input	4
 ethernetif.c:372:7:ethernetif_init	2
 ethernetif.c:423:6:pbuf_free_custom	2

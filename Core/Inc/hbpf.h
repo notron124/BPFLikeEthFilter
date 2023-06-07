@@ -25,5 +25,6 @@ struct sock_filter {
 
 extern struct sock_filter INSTRUCTION_IP[];
 extern struct sock_filter INSTRUCTION_IP_UDP[];
+extern struct sock_filter INSTRUCTION_DEST_PORT[];
 
 #endif

@@ -300,9 +300,9 @@ static struct pbuf * low_level_input(struct netif *netif)
     {
       LED2_TGL;
 
-      if (Filter(p->payload, &INSTRUCTION_IP_TCP[0]))
+      if (Filter(p->payload, &INSTRUCTION_DEST_PORT[0]))
       {
-
+         filteredCounter++;
       }
     }
   }
